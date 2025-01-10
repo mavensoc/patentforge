@@ -1,19 +1,26 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
 import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+import {onDocumentCreated} from "firebase-functions/v2/firestore";
+import {logger} from "firebase-functions";
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+// HTTP function example
+export const helloWorld = onRequest((request, response) => {
+  logger.info("Hello logs!", {structuredData: true});
+  response.send("Hello from Firebase!");
+});
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+// Firestore trigger function example
+export const onPatentCreated = onDocumentCreated(
+    "patents/{patentId}",
+    (event) => {
+      const snapshot = event.data;
+      if (snapshot) {
+        const newPatent = snapshot.data();
+        logger.info(
+            `New patent created: ${newPatent.title}`,
+            {structuredData: true}
+        );
+        // You can add more logic here as needed
+      }
+    }
+);
+
